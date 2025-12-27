@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { serverUrl } from '../main.jsx'
+import {useDispatch} from  'react-redux';
+import {setUserData} from '../redux/userSlice.js'
+
+
 
 const Login = () => {
   const navigate = useNavigate()
@@ -11,6 +15,8 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const[loading,setLoading]=useState(false);
   const [error,setError]=useState("");
+  let dispatch=useDispatch();
+  
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -23,7 +29,7 @@ const Login = () => {
         { withCredentials: true }
       )
 
-      console.log(result.data)
+      dispatch(setUserData(result.data))
       navigate("/") 
       
       // or dashboard/chat page
