@@ -57,7 +57,7 @@ setLoding(true);
           </h1>
 
           <img
-            src="/hamroCha.png"
+            src="/HamroCha.png"
             alt="HamroChat Logo"
             className="h-32 w-32 object-contain rounded shadow-xl"
           />
