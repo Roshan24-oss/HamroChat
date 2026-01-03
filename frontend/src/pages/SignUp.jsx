@@ -33,7 +33,7 @@ setLoding(true);
       )
   dispatch(setUserData(result.data))
       console.log(result.data)
-      navigate("/login")
+      navigate("/profile")
       setUserName("")
       setEmail("")
       setPassword("")
