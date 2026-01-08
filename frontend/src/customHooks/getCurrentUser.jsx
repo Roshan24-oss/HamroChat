@@ -9,17 +9,17 @@ const useCurrentUser = () => {
   const userData = useSelector((state) => state.user.userData);
 
   useEffect(() => {
-    if (userData) return; // 🚀 already loaded, skip API call
+    if (userData) return; // already loaded
 
     const fetchUser = async () => {
       try {
-        const result = await axios.get(
-          `${serverUrl}/api/user/current`,
-          { withCredentials: true }
-        );
-        dispatch(setUserData(result.data));
+        const result = await axios.get(`${serverUrl}/api/user/current`, {
+          withCredentials: true,
+        });
+        dispatch(setUserData(result.data)); // update Redux immediately
       } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch current user:", error);
+        dispatch(setUserData(null)); // failed, ensure we don't block routes
       }
     };
 

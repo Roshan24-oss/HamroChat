@@ -3,9 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    userData: null,
+    userData: undefined, // ✅ undefined initially so we can show loading
     otherUsers: null,
-    selectedUser: null, // selected user for chat
+    selectedUser: null,
   },
   reducers: {
     setUserData: (state, action) => {
@@ -14,7 +14,7 @@ const userSlice = createSlice({
     setOtherUsers: (state, action) => {
       state.otherUsers = action.payload;
     },
-    setSelectedUser: (state, action) => { // Fixed name & logic
+    setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
     },
   },

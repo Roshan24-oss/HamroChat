@@ -1,25 +1,14 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-const messageSchema= new mongoose.Schema({
-    sender:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
-    },
-    reciver:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:"true"
-    },
-    message:{
-        type:String,
-default:""
-    },
-    image:{
-        type:String,
-        default:""
-    }
-},{timestamps:true})
+const messageSchema = new mongoose.Schema(
+  {
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    message: { type: String, default: "" },
+    image: { type: String, default: "" },
+  },
+  { timestamps: true }
+);
 
-const Messaage=mongoose.model("Message",messageSchema)
-export default Messaage
+const Message = mongoose.model("Message", messageSchema);
+export default Message;

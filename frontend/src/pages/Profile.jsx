@@ -12,16 +12,19 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [name, setName] = useState(userData?.name || "");
-  const [frontendImage, setFrontendImage] = useState(userData?.image || dp);
+  const [name, setName] = useState("");
+  const [frontendImage, setFrontendImage] = useState(dp);
   const [backendImage, setBackendImage] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const imageInput = useRef(null);
 
+  // Update local state whenever userData changes
   useEffect(() => {
-    setFrontendImage(userData?.image || dp);
-    setName(userData?.name || "");
+    if (userData) {
+      setName(userData.name || "");
+      setFrontendImage(userData.image || dp);
+    }
   }, [userData]);
 
   const handleImage = (e) => {
@@ -39,26 +42,16 @@ const Profile = () => {
     try {
       const formData = new FormData();
       formData.append("name", name);
-      if (backendImage) {
-        formData.append("image", backendImage);
-      }
+      if (backendImage) formData.append("image", backendImage);
 
-      const result = await axios.put(
-        `${serverUrl}/api/user/profile`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const result = await axios.put(`${serverUrl}/api/user/profile`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      // If backend sends { user: {...} } then use result.data.user
       dispatch(setUserData(result.data));
-
       alert("Profile updated successfully!");
-      navigate("/"); // ✅ Go back to home
+      navigate("/");
     } catch (error) {
       console.error("Profile update error:", error);
       alert("Profile update failed. Try again!");
@@ -69,7 +62,6 @@ const Profile = () => {
 
   return (
     <div className="w-full min-h-screen bg-slate-200 flex flex-col items-center pt-10">
-      {/* Back Button */}
       <button
         className="self-start ml-5 mb-5 text-2xl text-gray-700 hover:text-blue-500"
         onClick={() => navigate("/")}
@@ -77,33 +69,21 @@ const Profile = () => {
         <IoArrowBack />
       </button>
 
-      {/* Profile Image */}
       <div
         className="relative bg-white rounded-full border-4 border-blue-400 shadow-lg p-1 cursor-pointer"
         onClick={() => imageInput.current.click()}
       >
         <div className="w-48 h-48 rounded-full overflow-hidden">
-          <img
-            src={frontendImage}
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
+          <img src={frontendImage} alt="Profile" className="w-full h-full object-cover" />
         </div>
         <IoCameraOutline className="absolute bottom-2 right-2 text-gray-700 w-7 h-7 hover:text-blue-500" />
       </div>
 
-      {/* Profile Form */}
       <form
         className="mt-8 w-80 flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md"
         onSubmit={handleProfile}
       >
-        <input
-          type="file"
-          accept="image/*"
-          ref={imageInput}
-          hidden
-          onChange={handleImage}
-        />
+        <input type="file" accept="image/*" ref={imageInput} hidden onChange={handleImage} />
 
         <input
           type="text"
@@ -132,9 +112,7 @@ const Profile = () => {
           type="submit"
           disabled={saving}
           className={`bg-blue-500 text-white rounded-md p-2 mt-2 transition ${
-            saving
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-blue-600"
+            saving ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
           }`}
         >
           {saving ? "Saving..." : "Save Profile"}
