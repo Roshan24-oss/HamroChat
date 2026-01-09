@@ -9,8 +9,9 @@ import userRouter from './routes/user.routes.js';
 import messageRouter from "./routes/message.routes.js"
 dotenv.config();
 
+import {app,server} from './socket/socket.js';
 
-const app=express();
+
 app.use(cors({
     origin:"http://localhost:5173",
     credentials:true
@@ -22,7 +23,7 @@ app.use("/api/auth",authRouter);
 app.use("/api/user",userRouter);
 app.use("/api/message",messageRouter)
 
-app.listen(port,()=>{
+server.listen(port,()=>{
     console.log("server is running on port "+port);
     connectdb();
 })
