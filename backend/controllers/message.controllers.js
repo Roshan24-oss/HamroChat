@@ -1,12 +1,17 @@
 import uploadOnCloudinary from "../config/cloudinary.js";
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import { io, getReceiverSocketId } from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
   try {
     const sender = req.user.userId;
     const { receiver } = req.params;
     const { message } = req.body;
+
+    if (!message && !req.file) {
+      return res.status(400).json({ message: "Message or image required" });
+    }
 
     let image;
     if (req.file) {
@@ -21,8 +26,8 @@ export const sendMessage = async (req, res) => {
     const newMessage = await Message.create({
       sender,
       receiver,
-      message,
-      image,
+      message: message || "",
+      image: image || "",
     });
 
     if (!conversation) {
@@ -35,13 +40,19 @@ export const sendMessage = async (req, res) => {
       await conversation.save();
     }
 
-    // Populate sender & receiver for frontend
+    // Populate sender & receiver
     await newMessage.populate("sender", "name image");
     await newMessage.populate("receiver", "name image");
 
+    const receiverSocketId = getReceiverSocketId(receiver);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
     return res.status(200).json(newMessage);
   } catch (error) {
-    return res.status(500).json({ message: `send Message error ${error}` });
+    console.error("sendMessage error:", error);
+    return res.status(500).json({ message: `sendMessage error: ${error.message}` });
   }
 };
 
@@ -60,12 +71,11 @@ export const getMessages = async (req, res) => {
       ],
     });
 
-    if (!conversation) {
-      return res.status(200).json([]);
-    }
+    if (!conversation) return res.status(200).json([]);
 
     return res.status(200).json(conversation.messages);
   } catch (error) {
-    return res.status(500).json({ message: `get message error ${error}` });
+    console.error("getMessages error:", error);
+    return res.status(500).json({ message: `getMessages error: ${error.message}` });
   }
 };
