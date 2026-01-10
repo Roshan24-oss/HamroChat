@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import SideBar from "./SideBar";
 import MessageArea from "./MessageArea";
+import { io } from "socket.io-client";
+import { setOnlineUsers } from "../redux/userSlice";
+import { serverUrl } from "../main.jsx";
 
 const ChatLayout = () => {
-  const { selectedUser } = useSelector((state) => state.user);
+  const { selectedUser, userData } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [isMobile, setIsMobile] = useState(false);
+
+  // 🔹 Socket ref
+  const socketRef = useRef(null);
 
   // Detect mobile
   useEffect(() => {
@@ -15,13 +22,31 @@ const ChatLayout = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Connect socket when userData is available
+  useEffect(() => {
+    if (!userData?._id) return;
+
+    socketRef.current = io(serverUrl, {
+      query: { userId: userData._id },
+    });
+
+    socketRef.current.on("getOnlineUsers", (users) => {
+      dispatch(setOnlineUsers(users));
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+      socketRef.current = null;
+    };
+  }, [userData?._id, dispatch]);
+
   return (
     <div className="flex h-screen w-screen">
       {/* Desktop: show both */}
       {!isMobile && (
         <>
           <SideBar />
-          <MessageArea />
+          <MessageArea socket={socketRef.current} />
         </>
       )}
 
@@ -29,7 +54,7 @@ const ChatLayout = () => {
       {isMobile && (
         <>
           {!selectedUser && <SideBar />}
-          {selectedUser && <MessageArea />}
+          {selectedUser && <MessageArea socket={socketRef.current} />}
         </>
       )}
     </div>

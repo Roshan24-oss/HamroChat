@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import uploadOnCloudinary from "../config/cloudinary.js";
 
 /* ================= CURRENT USER ================= */
 export const getCurrentUser = async (req, res) => {
@@ -30,7 +31,9 @@ export const editProfile = async (req, res) => {
     if (req.body.name) updateData.name = req.body.name;
 
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      // Upload image to Cloudinary instead of saving locally
+      const cloudinaryUrl = await uploadOnCloudinary(req.file.path);
+      updateData.image = cloudinaryUrl;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
