@@ -11,18 +11,15 @@ const ChatLayout = () => {
   const dispatch = useDispatch();
   const [isMobile, setIsMobile] = useState(false);
 
-  // 🔹 Socket ref
   const socketRef = useRef(null);
 
-  // Detect mobile
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize(); // initial check
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Connect socket when userData is available
   useEffect(() => {
     if (!userData?._id) return;
 
@@ -42,7 +39,7 @@ const ChatLayout = () => {
 
   return (
     <div className="flex h-screen w-screen">
-      {/* Desktop: show both */}
+      {/* Desktop */}
       {!isMobile && (
         <>
           <SideBar />

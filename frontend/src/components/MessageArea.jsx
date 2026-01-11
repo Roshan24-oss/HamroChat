@@ -94,32 +94,50 @@ const MessageArea = ({ socket }) => {
 
   return (
     <div className="flex-1 flex flex-col h-screen bg-gray-100">
+      {/* Top Bar */}
       <div className="flex items-center gap-4 p-4 bg-white shadow">
-        <IoArrowBack onClick={() => dispatch(setSelectedUser(null))} />
-        <img src={selectedUser.image || dp} className="w-10 h-10 rounded-full" />
-        <span>{selectedUser.name}</span>
+        <IoArrowBack
+          onClick={() => dispatch(setSelectedUser(null))}
+          className="cursor-pointer text-xl"
+        />
+        <img
+          src={selectedUser.image || dp}
+          className="w-10 h-10 rounded-full"
+        />
+        <span className="font-medium">{selectedUser.name}</span>
       </div>
 
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
         {currentChatMessages.map((m, i) =>
           m.sender._id === userData._id ? (
-            <SenderMessage key={i} message={m.message} image={m.image} />
+            <SenderMessage
+              key={i}
+              message={m.message}
+              image={m.image}
+              profile={userData}
+            />
           ) : (
             <ReceiverMessage
               key={i}
               message={m.message}
               image={m.image}
-              profile={selectedUser.image || dp}
+              profile={selectedUser}
             />
           )
         )}
         <div ref={chatEndRef} />
       </div>
 
+      {/* Input Area */}
       <div className="p-4 flex flex-col gap-2 bg-white">
         {previewUrl && (
           <div className="relative w-32 h-32">
-            <img src={previewUrl} alt="preview" className="object-cover w-full h-full rounded" />
+            <img
+              src={previewUrl}
+              alt="preview"
+              className="object-cover w-full h-full rounded"
+            />
             <button
               onClick={() => {
                 setImage(null);
@@ -133,9 +151,21 @@ const MessageArea = ({ socket }) => {
         )}
 
         <div className="flex gap-2">
-          <BsEmojiSmile onClick={() => setShowEmoji(!showEmoji)} className="text-xl" />
-          <IoImage onClick={() => fileInputRef.current.click()} className="text-xl" />
-          <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleImageChange} />
+          <BsEmojiSmile
+            onClick={() => setShowEmoji(!showEmoji)}
+            className="text-xl cursor-pointer"
+          />
+          <IoImage
+            onClick={() => fileInputRef.current.click()}
+            className="text-xl cursor-pointer"
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleImageChange}
+          />
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -143,10 +173,17 @@ const MessageArea = ({ socket }) => {
             placeholder="Type a message..."
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />
-          <IoSend onClick={handleSendMessage} className="text-2xl cursor-pointer" />
+          <IoSend
+            onClick={handleSendMessage}
+            className="text-2xl cursor-pointer"
+          />
         </div>
 
-        {showEmoji && <EmojiPicker onEmojiClick={(e) => setMessage((prev) => prev + e.emoji)} />}
+        {showEmoji && (
+          <EmojiPicker
+            onEmojiClick={(e) => setMessage((prev) => prev + e.emoji)}
+          />
+        )}
       </div>
     </div>
   );

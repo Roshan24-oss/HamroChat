@@ -52,7 +52,7 @@ const App = () => {
       />
       <Route
         path="/signup"
-        element={!userData ? <SignUp /> : <Navigate to="/" />}
+        element={!userData ? <SignUp /> : <Navigate to="/profile" />}
       />
       <Route
         path="/"
