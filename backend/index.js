@@ -13,7 +13,7 @@ import {app,server} from './socket/socket.js';
 
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"https://hamrochat-c1dt.onrender.com",
     credentials:true
 }));
 const port=process.env.PORT || 8000;
