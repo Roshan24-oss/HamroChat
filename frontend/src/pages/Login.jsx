@@ -4,6 +4,7 @@ import axios from 'axios'
 import { serverUrl } from '../main.jsx'
 import {useDispatch} from  'react-redux';
 import {setUserData} from '../redux/userSlice.js'
+import logo from "../assets/HamroCha.png"
 
 
 
@@ -56,7 +57,7 @@ const Login = () => {
           </h1>
 
           <img
-            src="/HamroCha.png"
+            src={logo}
             alt="HamroChat Logo"
             className="h-32 w-32 object-contain rounded shadow-xl"
           />
